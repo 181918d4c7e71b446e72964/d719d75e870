@@ -1,6 +1,6 @@
 # Passport challenge
 
-Visit [factory-tree.com]('https://factory-tree.com/') to see a running example
+Visit [factory-tree.com](https://factory-tree.com) to see a running example
 
 ## Architecture
 
