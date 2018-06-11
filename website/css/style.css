@@ -1,0 +1,41 @@
+body {
+  font-family:sans-serif;
+}
+* {
+  user-select:none;
+}
+ul {
+  list-style-type:none;
+  padding-left:10px;
+}
+li {
+  padding:2px 10px;
+}
+li#root {
+  margin-left:-20px;
+
+}
+div.factory-name {
+  font-weight:bold;
+  cursor:pointer;
+}
+div.factory-name:hover {
+  color:#444;
+}
+span.factory-form-show {
+  display:inline-block;
+  font-weight:normal;
+}
+li.child{
+  border-left:1px dotted #ddd;
+}
+form {
+  background:#eee;
+  padding:5px;
+}
+input {
+  margin:5px 2px;
+}
+input[type=number] {
+  width: 50px;
+}

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset='utf-8'>
+      <meta name='description' content=''>
+      <meta name='viewport' content='width=device-width, initial-scale=1'>
+      <title>factory-tree (Passport Challenge)</title>
+      <link rel='stylesheet' href='css/style.css'>
+      <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.min.js'></script>
+      <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.10/lodash.min.js'></script>
+  </head>
+  <body>
+
+    <div id='app'>
+      <input v-on:click.stop='create()' type='button' class='create' value='create factory'/>
+      <ul class='items-list'>
+        <li class='item' id='root'>
+          <div class='factory-name'>root</div>
+        </li>
+        <li class='item' v-for='item in items' :key='item.FactoryID'>
+          <div v-on:click.stop='item.show = !item.show' class='factory-name'>{{ item.FactoryName }}
+            <span class='factory-form-show'>
+               ⚙
+            </span>
+          </div>
+          <form v-if='item.show || false'>
+            <label>name <input v-model='item.FactoryName'/></label>
+            </br>
+            <label>count <input v-model.number='item.Count' type='number' min='1' max='15' class='count'/></label>
+            <label>min<input v-model.number='item.MinValue' type='number' class='min-value'/></label>
+            <label>max<input v-model.number='item.MaxValue' type='number' class='max-value'/></label>
+            <input v-on:click.stop='generate(item.FactoryID)' type='button' class='generate' value='generate'/>
+            </br>
+            <input v-on:click.stop='save(item.FactoryID)' type='button' class='save' value='save'/>
+            <input v-on:click.stop='remove(item.FactoryID)' type='button' class='remove' value='remove'/>
+          </form>
+          <ul class='child-list'>
+            <li class='child' v-for='child in item.Children'>
+              <div class='child-name'>{{ child }}</div>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  <script src='js/app.js'></script>
+  </body>
+</html>
