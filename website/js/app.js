@@ -1,4 +1,3 @@
-
 const factoriesUrl = 'https://jic5ut3ep2.execute-api.us-east-1.amazonaws.com/prod/factories'
 const websocketUrl = 'wss://ws.factory-tree.com'
 const ClientID = Math.random().toString(16).substring(2)
@@ -6,13 +5,6 @@ const ClientID = Math.random().toString(16).substring(2)
 function request(options) {
   return fetch(factoriesUrl, options)
     .then((res) => res.json())
-    .then((res) => {
-      if (res.errors) {
-        alert(res.errors)
-        return
-      }
-      return res
-    })
 }
 const db = {
   getAll: function() {
@@ -24,13 +16,15 @@ const db = {
   upsert: function(item) {
     return request({
       method: 'POST',
-      body: JSON.stringify({ Item: item })
+      body: JSON.stringify({ Item: item }),
+      headers: { 'content-type': 'application/json' }
     })
   },
   remove: function(item) {
     return request({
       method: 'DELETE',
-      body: JSON.stringify({ Key: { FactoryID: item.FactoryID } })
+      body: JSON.stringify({ Key: { FactoryID: item.FactoryID } }),
+      headers: { 'content-type': 'application/json' }
     })
   }
 }
@@ -51,11 +45,9 @@ const methods = {
       ClientID
     }
 
-    if (_.some(_.values(item), _.isEmpty))
-      return alert('ernt')
-
     db.upsert(item)
       .then((res) => this.items.unshift(_.assign(item, res, {show: false})))
+      .catch((err) => alert(err))
   },
 
   remove: function(FactoryID) {
@@ -67,6 +59,7 @@ const methods = {
 
     db.remove(item)
       .then(() => this.items = _.reject(this.items, { FactoryID }))
+      .catch((err) => alert(err))
   },
 
   generate: function(FactoryID) {
@@ -87,44 +80,47 @@ const methods = {
     _.assign(item, { ClientID })
 
     db.upsert(_.omit(item, 'show'))
+      .catch((err) => alert(err))
   }
 }
 
-function init(items) {
+const data = {
+  items: []
+}
+
+const app = new Vue({
+  el: '#app',
+  data,
+  methods
+})
+
+
+db.getAll().then((items) => {
   const sortedItems = _.sortBy(items, 'FactoryName')
-  const data = {
-    items: _.map(sortedItems, (i) => _.assign(i, { show: false })),
-  }
-  const app = new Vue({
-    el: '#app',
-    data,
-    methods
-  })
+  data.items = _.map(sortedItems, (i) => _.assign(i, { show: false }))
+})
 
-  const websocket = new WebSocket(websocketUrl)
+const websocket = new WebSocket(websocketUrl)
 
-  websocket.onmessage = function(message) {
-    const { FactoryID, Type, Item } = JSON.parse(message.data)
-    if (Item.ClientID === ClientID) return
-    switch (Type) {
-      case 'INSERT':
-        data.items.unshift(_.assign(Item, { show: false }))
-        break;
-      case 'REMOVE':
-        data.items = _.reject(data.items, { FactoryID })
-        break;
-      case 'MODIFY':
-        const item = _.find(data.items, { FactoryID })
-        _.assign(item, Item)
-        break;
-    }
-  }
-
-  websocket.onopen = function() {
-    websocket.send(JSON.stringify({ ClientID }))
+websocket.onmessage = function(message) {
+  const { FactoryID, Type, Item } = JSON.parse(message.data)
+  if (Item.ClientID === ClientID) return
+  switch (Type) {
+    case 'INSERT':
+      data.items.unshift(_.assign(Item, { show: false }))
+      break;
+    case 'REMOVE':
+      data.items = _.reject(data.items, { FactoryID })
+      break;
+    case 'MODIFY':
+      const item = _.find(data.items, { FactoryID })
+      _.assign(item, Item)
+      break;
   }
 }
 
-db.getAll().then(init)
+websocket.onopen = function() {
+  websocket.send(JSON.stringify({ ClientID }))
+}
 
 

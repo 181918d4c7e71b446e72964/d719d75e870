@@ -1,0 +1,17 @@
+{
+  "properties": {
+    "Key": {
+      "properties": {
+        "FactoryID": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "FactoryID"
+      ]
+    }
+  },
+  "required": [
+    "Key"
+  ]
+}
