@@ -41,3 +41,6 @@ Visit [factory-tree.com](https://factory-tree.com) to see a running example
 + Stylistic improvements to front-end
 
 
+## Edit: Apparently API Gateway can validate request body with json-schema w/o the need to do this in API Lambda
+
+
